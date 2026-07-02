@@ -1,0 +1,767 @@
+{
+  "name": "Lead Generation Machine — Capture, Score, Route & Nurture",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🧲 Lead Generation Machine\n\n**Capture → Validate → Enrich → Score → Route → Nurture → Convert**\n\nEvery lead that enters (via the hosted form or the webhook) is normalized, scored 0–100, then routed:\n\n- 🔥 **HOT (70+)** → instant Slack alert + CRM + booking email. *Respond in under 5 minutes: you are 100x more likely to reach the lead and 21x more likely to qualify it (MIT / InsideSales Lead Response study).*\n- 🌤 **WARM (40–69)** → CRM + automated 3-email nurture over ~1 week.\n- ❄️ **COLD (<40)** → newsletter list for long-term nurture.\n\n### Setup checklist (10–15 min)\n1. **SMTP credential** → attach to every *Send Email* node (or swap them for Gmail/Outlook nodes).\n2. **Slack credential** → attach to the two Slack nodes, pick your channel (default `#sales-leads`).\n3. **Google Sheets credential** → attach to the three *Save…* nodes and pick one spreadsheet with tabs `Hot`, `Warm`, `Newsletter` (or point all three at one tab). Or replace with your CRM node (HubSpot, Pipedrive, Airtable…).\n4. *(Optional)* enable the **Hunter email-verify** node and paste your API key.\n5. Edit the email copy + booking link, then **Activate** the workflow.\n\nCredentials are never included in a template — that is expected n8n behavior.",
+        "width": 480,
+        "height": 980,
+        "color": 7
+      },
+      "id": "11111111-0000-4000-8000-000000000001",
+      "name": "README — Start Here",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-1780, -300]
+    },
+    {
+      "parameters": {
+        "content": "### 1️⃣ CAPTURE\n\nTwo entry points, one pipeline:\n\n**A. Hosted form** — n8n serves this form at its own URL (open the node → *Form URL*). Link it from your site, ads, email signature, QR codes.\n\n**B. Webhook** — `POST /webhook/lead-intake` from any source: your website form, Facebook/LinkedIn Lead Ads (via their webhook), chatbot, landing-page tool.\n\n```json\n{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@acme.com\",\n  \"company\": \"Acme Inc\",\n  \"company_size\": \"11-50\",\n  \"role\": \"VP / Director\",\n  \"timeline\": \"Right away\",\n  \"budget\": \"$2,000 - $10,000\",\n  \"message\": \"Need a demo\",\n  \"source\": \"pricing-page\"\n}\n```",
+        "width": 340,
+        "height": 700,
+        "color": 4
+      },
+      "id": "11111111-0000-4000-8000-000000000002",
+      "name": "Note — Capture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-1280, -20]
+    },
+    {
+      "parameters": {
+        "content": "### 2️⃣ VALIDATE + ENRICH\n\n**Normalize** maps both entry points to one clean lead object (lowercased email, trimmed fields, free-email flag, capture timestamp).\n\n**Valid Email?** drops garbage before it pollutes your CRM.\n\n**Hunter verify (optional, disabled)** — enable it and paste your API key to catch fake/disposable emails. Works the same with ZeroBounce, NeverBounce, Clearbit or Apollo: swap the URL, the merge step passes anything through unchanged when the node is off.",
+        "width": 700,
+        "height": 300,
+        "color": 5
+      },
+      "id": "11111111-0000-4000-8000-000000000003",
+      "name": "Note — Validate & Enrich",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-900, -140]
+    },
+    {
+      "parameters": {
+        "content": "### 3️⃣ SCORE (0–100)\n\n**Fit (40 pts):** company size 15 · role/seniority 15 · business email 10\n**Intent (45 pts):** timeline 20 · budget 15 · message keywords 10\n**Source (15 pts):** demo-request 15 · pricing-page/referral 12 · webinar 10 · linkedin 8\n**Penalties:** student −10 · spam keywords −15 · invalid email −30\n\nGrades: **HOT ≥ 70 · WARM 40–69 · COLD < 40**\n\nTune the tables inside the node to your ICP, then re-check monthly: won deals should score higher than lost ones.",
+        "width": 460,
+        "height": 340,
+        "color": 6
+      },
+      "id": "11111111-0000-4000-8000-000000000004",
+      "name": "Note — Scoring",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-160, -140]
+    },
+    {
+      "parameters": {
+        "content": "### 4️⃣ ROUTE — speed to lead 🔥\n\nHot leads fan out in parallel: sales alert, CRM row, and an instant booking email to the lead.\n\n**Why the rush:** 78% of buyers purchase from the vendor that responds first, and lead quality decays ~10% for every minute of delay in the first five. The average company takes 47 *hours* — this workflow takes seconds.",
+        "width": 480,
+        "height": 260,
+        "color": 3
+      },
+      "id": "11111111-0000-4000-8000-000000000005",
+      "name": "Note — Routing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [380, -480]
+    },
+    {
+      "parameters": {
+        "content": "### 5️⃣ NURTURE & CONVERT 🌱\n\nWarm leads get a 3-touch sequence over ~6 days: value → proof → clear CTA. It takes ~8 touches on average to earn a meeting, and 44% of reps give up after one — the machine never gives up.\n\nWhen the sequence finishes, sales gets a Slack ping to review the lead while it is still warm. Add more Wait → Email pairs to extend the sequence, or an IF that checks your CRM and exits the sequence once the lead replies or books.",
+        "width": 1400,
+        "height": 220,
+        "color": 2
+      },
+      "id": "11111111-0000-4000-8000-000000000006",
+      "name": "Note — Nurture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [380, 560]
+    },
+    {
+      "parameters": {
+        "formTitle": "Let's talk about your project",
+        "formDescription": "Tell us a little about what you need — we usually reply within the hour.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "Jane Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Work Email",
+              "fieldType": "email",
+              "placeholder": "jane@company.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "placeholder": "Acme Inc."
+            },
+            {
+              "fieldLabel": "Company Size",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  { "option": "Just me" },
+                  { "option": "2-10" },
+                  { "option": "11-50" },
+                  { "option": "51-200" },
+                  { "option": "201-1000" },
+                  { "option": "1000+" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Your Role",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  { "option": "Founder / C-Level" },
+                  { "option": "VP / Director" },
+                  { "option": "Manager / Team Lead" },
+                  { "option": "Individual Contributor" },
+                  { "option": "Student / Other" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "When do you want to start?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  { "option": "Right away" },
+                  { "option": "Within 1-3 months" },
+                  { "option": "In 3-6 months" },
+                  { "option": "Just researching" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Monthly budget for this project",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  { "option": "Under $500" },
+                  { "option": "$500 - $2,000" },
+                  { "option": "$2,000 - $10,000" },
+                  { "option": "Over $10,000" },
+                  { "option": "Not sure yet" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "What do you need help with?",
+              "fieldType": "textarea",
+              "placeholder": "The more detail, the faster we can help."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22222222-0000-4000-8000-000000000001",
+      "name": "Lead Capture Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [-1180, 140],
+      "webhookId": "5f1c86f0-1e2d-4a5b-9c3e-aaaaaaaaaaa1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-intake",
+        "options": {}
+      },
+      "id": "22222222-0000-4000-8000-000000000002",
+      "name": "Webhook — External Lead Sources",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1180, 420],
+      "webhookId": "5f1c86f0-1e2d-4a5b-9c3e-aaaaaaaaaaa2"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Normalize both entry points (hosted form + webhook) into one canonical lead object.\nconst src = $json.body ? $json.body : $json;\n\nconst pick = (...keys) => {\n  for (const k of keys) {\n    const v = src[k];\n    if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();\n  }\n  return '';\n};\n\nconst name = pick('Full Name', 'name', 'full_name', 'fullName');\nconst email = pick('Work Email', 'email', 'work_email').toLowerCase();\nconst company = pick('Company Name', 'company', 'company_name');\nconst companySize = pick('Company Size', 'company_size', 'companySize');\nconst role = pick('Your Role', 'role', 'job_title', 'title');\nconst timeline = pick('When do you want to start?', 'timeline', 'start');\nconst budget = pick('Monthly budget for this project', 'budget');\nconst message = pick('What do you need help with?', 'message', 'notes');\nconst source = pick('source', 'utm_source') || ($json.body ? 'webhook' : 'n8n-form');\nconst campaign = pick('campaign', 'utm_campaign');\n\nconst validEmail = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email);\nconst emailDomain = validEmail ? email.split('@')[1] : '';\nconst FREE_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'proton.me', 'protonmail.com', 'gmx.com', 'mail.com', 'yandex.com', 'zoho.com'];\nconst isFreeEmail = FREE_DOMAINS.includes(emailDomain);\n\nreturn {\n  json: {\n    name,\n    email,\n    emailDomain,\n    isFreeEmail,\n    validEmail,\n    company,\n    companySize,\n    role,\n    timeline,\n    budget,\n    message,\n    source,\n    campaign,\n    capturedAt: new Date().toISOString(),\n    status: 'new'\n  }\n};"
+      },
+      "id": "22222222-0000-4000-8000-000000000003",
+      "name": "Normalize & Validate Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-940, 260]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-valid-email",
+              "leftValue": "={{ $json.validEmail }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "22222222-0000-4000-8000-000000000004",
+      "name": "Valid Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-720, 260]
+    },
+    {
+      "parameters": {},
+      "id": "22222222-0000-4000-8000-000000000005",
+      "name": "Discard Invalid Lead",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [-500, 440]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.hunter.io/v2/email-verifier?email={{ $json.email }}&api_key=YOUR_HUNTER_API_KEY",
+        "options": {}
+      },
+      "id": "22222222-0000-4000-8000-000000000006",
+      "name": "Verify Email with Hunter (Optional)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-500, 140],
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Merge enrichment results back onto the lead.\n// If the Hunter node is disabled (default) or failed, the lead passes through unchanged.\nconst lead = $('Normalize & Validate Lead').item.json;\nconst resp = $json;\n\nif (!resp || !resp.data || typeof resp.data !== 'object') {\n  return { json: lead };\n}\n\nconst v = resp.data;\nreturn {\n  json: {\n    ...lead,\n    emailStatus: v.status || 'unknown',\n    emailConfidence: v.score ?? '',\n    enriched: true\n  }\n};"
+      },
+      "id": "22222222-0000-4000-8000-000000000007",
+      "name": "Merge Enrichment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-280, 140]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// ---- Lead scoring engine: 0-100 points ----\n// Fit (max 40) + Intent (max 45) + Source (max 15) - penalties.\n// Tune every table below to YOUR ideal customer profile.\nconst lead = $json;\nlet score = 0;\nconst breakdown = {};\n\n// --- Fit: company size (max 15) ---\nconst sizeScores = { 'Just me': 3, '2-10': 8, '11-50': 12, '51-200': 15, '201-1000': 15, '1000+': 12 };\nconst sizePts = sizeScores[lead.companySize] ?? 5;\nscore += sizePts;\nbreakdown.companySize = sizePts;\n\n// --- Fit: role / seniority (max 15) ---\nconst roleScores = { 'Founder / C-Level': 15, 'VP / Director': 12, 'Manager / Team Lead': 8, 'Individual Contributor': 3, 'Student / Other': 0 };\nconst rolePts = roleScores[lead.role] ?? 5;\nscore += rolePts;\nbreakdown.role = rolePts;\n\n// --- Fit: business email (max 10) ---\nconst emailPts = lead.isFreeEmail ? 0 : 10;\nscore += emailPts;\nbreakdown.businessEmail = emailPts;\n\n// --- Intent: timeline (max 20) ---\nconst timelineScores = { 'Right away': 20, 'Within 1-3 months': 15, 'In 3-6 months': 8, 'Just researching': 2 };\nconst timePts = timelineScores[lead.timeline] ?? 5;\nscore += timePts;\nbreakdown.timeline = timePts;\n\n// --- Intent: budget (max 15) ---\nconst budgetScores = { 'Over $10,000': 15, '$2,000 - $10,000': 12, '$500 - $2,000': 8, 'Under $500': 3, 'Not sure yet': 5 };\nconst budgetPts = budgetScores[lead.budget] ?? 5;\nscore += budgetPts;\nbreakdown.budget = budgetPts;\n\n// --- Intent: buying-signal keywords in the message (max 10) ---\nconst msg = (lead.message || '').toLowerCase();\nconst hotWords = ['demo', 'pricing', 'quote', 'proposal', 'urgent', 'asap', 'call', 'migrate', 'switch', 'buy'];\nlet kwPts = 0;\nfor (const w of hotWords) {\n  if (msg.includes(w)) kwPts += 5;\n}\nkwPts = Math.min(kwPts, 10);\nscore += kwPts;\nbreakdown.intentKeywords = kwPts;\n\n// --- Source quality (max 15) ---\nconst sourceScores = { 'demo-request': 15, 'pricing-page': 12, 'referral': 12, 'webinar': 10, 'linkedin': 8, 'newsletter': 5, 'n8n-form': 5, 'webhook': 5 };\nconst srcPts = sourceScores[(lead.source || '').toLowerCase()] ?? 3;\nscore += srcPts;\nbreakdown.source = srcPts;\n\n// --- Negative signals ---\nlet penalty = 0;\nif ((lead.role || '') === 'Student / Other') penalty += 10;\nconst spamWords = ['test test', 'asdf', 'seo services', 'backlink', 'guest post', 'crypto airdrop'];\nfor (const w of spamWords) {\n  if (msg.includes(w)) { penalty += 15; break; }\n}\nif (lead.emailStatus === 'invalid') penalty += 30;\nscore -= penalty;\nbreakdown.penalties = -penalty;\n\nscore = Math.max(0, Math.min(100, score));\nconst grade = score >= 70 ? 'HOT' : score >= 40 ? 'WARM' : 'COLD';\n\nreturn { json: { ...lead, score, grade, scoreBreakdown: JSON.stringify(breakdown) } };"
+      },
+      "id": "22222222-0000-4000-8000-000000000008",
+      "name": "Lead Scoring Engine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-60, 140]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "rule-hot",
+                    "leftValue": "={{ $json.grade }}",
+                    "rightValue": "HOT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "🔥 Hot"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "rule-warm",
+                    "leftValue": "={{ $json.grade }}",
+                    "rightValue": "WARM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "🌤 Warm"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "rule-cold",
+                    "leftValue": "={{ $json.grade }}",
+                    "rightValue": "COLD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "❄️ Cold"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22222222-0000-4000-8000-000000000009",
+      "name": "Route by Lead Grade",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [160, 140]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#sales-leads"
+        },
+        "text": "=🔥 *HOT LEAD — respond within 5 minutes!*\n\n*Name:* {{ $json.name }}\n*Email:* {{ $json.email }}\n*Company:* {{ $json.company || '—' }} ({{ $json.companySize || 'size unknown' }})\n*Role:* {{ $json.role || '—' }}\n*Timeline:* {{ $json.timeline || '—' }}\n*Budget:* {{ $json.budget || '—' }}\n*Source:* {{ $json.source }}\n*Score:* {{ $json.score }}/100\n\n> {{ $json.message || 'No message left.' }}",
+        "otherOptions": {}
+      },
+      "id": "33333333-0000-4000-8000-000000000001",
+      "name": "Alert Sales — Hot Lead",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [440, -200]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "33333333-0000-4000-8000-000000000002",
+      "name": "Save Hot Lead to CRM",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [440, -60]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@yourcompany.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Quick question about your project, {{ $json.name.split(' ')[0] }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name.split(' ')[0] }},\n\nThanks for reaching out — I just saw your note come in and wanted to reply personally.\n\nBased on what you shared, this looks like something we can help with right away. Grab any slot on my calendar and let's talk it through:\n\n👉 https://cal.com/YOUR-BOOKING-LINK\n\nIf it's easier, just reply to this email with a couple of times that work for you.\n\nTalk soon,\nYOUR NAME\nYOUR COMPANY",
+        "options": {}
+      },
+      "id": "33333333-0000-4000-8000-000000000003",
+      "name": "Send Booking Link to Lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [440, 80]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "44444444-0000-4000-8000-000000000001",
+      "name": "Save Warm Lead to CRM",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [440, 260]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@yourcompany.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Here's the resource I promised, {{ $json.name.split(' ')[0] }}",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name.split(' ')[0] }},\n\nThanks for getting in touch! While we review your note, here's our most useful free resource on the topic:\n\n📘 YOUR LEAD MAGNET — https://yourcompany.com/guide\n\nIt covers the three mistakes we see most often and how to avoid them.\n\nI'll follow up in a couple of days with something more specific to your situation.\n\nBest,\nYOUR NAME\nYOUR COMPANY",
+        "options": {}
+      },
+      "id": "44444444-0000-4000-8000-000000000002",
+      "name": "Nurture Email 1 — Welcome + Value",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [440, 400]
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "amount": 2
+      },
+      "id": "44444444-0000-4000-8000-000000000003",
+      "name": "Wait 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [660, 400],
+      "webhookId": "5f1c86f0-1e2d-4a5b-9c3e-aaaaaaaaaaa3"
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@yourcompany.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "How ACME CLIENT solved the exact problem you mentioned",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name.split(' ')[0] }},\n\nQuick follow-up — your note mentioned:\n\n\"{{ $json.message }}\"\n\nWe helped a company in a very similar spot. Here's the short version of what happened:\n\n📈 CASE STUDY — https://yourcompany.com/case-study\n(RESULT: e.g. 'cut processing time 85% in 6 weeks')\n\nHappy to walk you through how it would map to your setup — just reply and I'll send over a couple of times.\n\nBest,\nYOUR NAME",
+        "options": {}
+      },
+      "id": "44444444-0000-4000-8000-000000000004",
+      "name": "Nurture Email 2 — Case Study",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [880, 400]
+    },
+    {
+      "parameters": {
+        "unit": "days",
+        "amount": 4
+      },
+      "id": "44444444-0000-4000-8000-000000000005",
+      "name": "Wait 4 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1100, 400],
+      "webhookId": "5f1c86f0-1e2d-4a5b-9c3e-aaaaaaaaaaa4"
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@yourcompany.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Should I close your file, {{ $json.name.split(' ')[0] }}?",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name.split(' ')[0] }},\n\nI don't want to clutter your inbox, so this is my last note for now.\n\nIf the timing isn't right, no problem at all — I'll check back in a quarter.\n\nBut if you'd like to move forward, here are the two easiest next steps:\n\n1. Book a free 20-minute consult: https://cal.com/YOUR-BOOKING-LINK\n2. Or just reply \"interested\" and I'll take it from there.\n\nEither way, thanks for considering us!\n\nBest,\nYOUR NAME\nYOUR COMPANY",
+        "options": {}
+      },
+      "id": "44444444-0000-4000-8000-000000000006",
+      "name": "Nurture Email 3 — Clear CTA",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1320, 400]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#sales-leads"
+        },
+        "text": "=🌤 *Warm lead finished the nurture sequence* — time for a human touch.\n\n*Name:* {{ $json.name }} ({{ $json.email }})\n*Company:* {{ $json.company || '—' }}\n*Score:* {{ $json.score }}/100\n*Captured:* {{ $json.capturedAt }}\n\nSuggested next step: personal follow-up call or connection request.",
+        "otherOptions": {}
+      },
+      "id": "44444444-0000-4000-8000-000000000007",
+      "name": "Notify Sales — Nurture Complete",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [1540, 400]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "55555555-0000-4000-8000-000000000001",
+      "name": "Save Cold Lead to List",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [440, 620]
+    },
+    {
+      "parameters": {
+        "fromEmail": "hello@yourcompany.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Welcome! Here's what to expect",
+        "emailFormat": "text",
+        "text": "=Hi {{ $json.name.split(' ')[0] }},\n\nThanks for your interest! We've added you to our newsletter — about once a month you'll get our best guides, templates and case studies. No spam, unsubscribe anytime.\n\nIn the meantime, our resource library is free to browse:\n\n📚 https://yourcompany.com/resources\n\nBest,\nYOUR NAME\nYOUR COMPANY",
+        "options": {}
+      },
+      "id": "55555555-0000-4000-8000-000000000002",
+      "name": "Newsletter Welcome Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [660, 620]
+    }
+  ],
+  "connections": {
+    "Lead Capture Form": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Validate Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook — External Lead Sources": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Validate Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Validate Lead": {
+      "main": [
+        [
+          {
+            "node": "Valid Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Email?": {
+      "main": [
+        [
+          {
+            "node": "Verify Email with Hunter (Optional)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discard Invalid Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Email with Hunter (Optional)": {
+      "main": [
+        [
+          {
+            "node": "Merge Enrichment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Enrichment": {
+      "main": [
+        [
+          {
+            "node": "Lead Scoring Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Scoring Engine": {
+      "main": [
+        [
+          {
+            "node": "Route by Lead Grade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Lead Grade": {
+      "main": [
+        [
+          {
+            "node": "Alert Sales — Hot Lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save Hot Lead to CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Booking Link to Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Warm Lead to CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Nurture Email 1 — Welcome + Value",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save Cold Lead to List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nurture Email 1 — Welcome + Value": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Nurture Email 2 — Case Study",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nurture Email 2 — Case Study": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 Days": {
+      "main": [
+        [
+          {
+            "node": "Nurture Email 3 — Clear CTA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nurture Email 3 — Clear CTA": {
+      "main": [
+        [
+          {
+            "node": "Notify Sales — Nurture Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Cold Lead to List": {
+      "main": [
+        [
+          {
+            "node": "Newsletter Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}
